@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sebut Harga A-Life Sejuta Makna</title>
+<title>Sebut Harga Takaful</title>
 <style>
   :root {
     --brand: #c8102e;
@@ -13,8 +13,11 @@
     --line: #ecdfe2;
     --bg: #fbf6f7;
     --card: #ffffff;
-    --soft: #fdeef1;
     --note: #fff5c2;
+    --basic: #5f6b7a;
+    --premium: #a8740f;
+    --platinum: #2b2b30;
+    --sejuta: #c8102e;
   }
   * { box-sizing: border-box; }
   body {
@@ -36,9 +39,10 @@
     padding: 20px;
     margin-top: 20px;
   }
-  label { display: block; font-weight: 600; margin-bottom: 6px; }
-  .row { display: flex; gap: 10px; }
-  input {
+  .field + .field { margin-top: 14px; }
+  .field > label, .lbl { display: block; font-weight: 600; margin-bottom: 6px; }
+  .opt { font-weight: 400; color: var(--muted); }
+  input[type=number], input[type=text] {
     font: inherit;
     width: 100%;
     padding: 12px 14px;
@@ -48,42 +52,69 @@
   }
   input:focus { outline: none; border-color: var(--brand); }
   input[type=number] { font-size: 1.4rem; font-weight: 700; }
-  .field + .field { margin-top: 14px; }
-  .hint { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
-  .error { color: var(--brand); font-size: 0.9rem; margin-top: 8px; min-height: 1.2em; }
+
+  .seg { display: flex; border: 1.5px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label {
+    flex: 1;
+    text-align: center;
+    padding: 10px 8px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .seg label + input + label { border-left: 1.5px solid var(--line); }
+  .seg input:checked + label { background: var(--brand); color: #fff; }
+  .seg input:focus-visible + label { outline: 2px solid var(--brand-dark); outline-offset: -4px; }
+
+  .error { color: var(--brand); font-size: 0.9rem; margin-top: 10px; min-height: 1.2em; }
 
   #quote[hidden] { display: none; }
   .q-head {
     background: var(--brand);
     color: #fff;
-    border-radius: 16px 16px 0 0;
-    margin: -20px -20px 16px;
+    border-radius: 16px;
     padding: 18px 20px;
+    margin-top: 20px;
   }
   .q-head small { opacity: 0.85; display: block; }
-  .q-head strong { font-size: 1.15rem; }
-  .cover { text-align: center; margin: 4px 0 16px; }
-  .cover small { color: var(--muted); display: block; }
-  .cover b { font-size: 2rem; letter-spacing: -0.02em; }
+  .q-head strong { font-size: 1.15rem; display: block; }
 
-  .prices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .price {
+  .plan {
+    background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 14px;
-    text-align: center;
+    border-radius: 16px;
+    margin-top: 14px;
+    overflow: hidden;
   }
-  .price h3 { margin: 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-  .price .amt { font-size: 1.9rem; font-weight: 800; color: var(--brand); }
-  .price .per { font-size: 0.8rem; color: var(--muted); }
-  .price .sub { font-size: 0.82rem; margin-top: 6px; }
-
-  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.92rem; }
-  td { padding: 8px 0; border-bottom: 1px solid var(--line); }
-  td:last-child { text-align: right; font-weight: 600; }
-
-  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
-  .badge { background: var(--soft); color: var(--brand-dark); padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+  .plan h3 {
+    margin: 0;
+    padding: 12px 18px;
+    background: var(--tier);
+    color: #fff;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+  }
+  .plan ul { margin: 0; padding: 14px 18px 4px 38px; }
+  .plan li { margin-bottom: 6px; }
+  .plan .price {
+    padding: 8px 18px 16px;
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--tier);
+  }
+  .plan .price small { font-size: 0.9rem; font-weight: 600; color: var(--muted); }
+  .plan .est {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--note);
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 6px;
+  }
 
   .note {
     background: var(--note);
@@ -92,8 +123,10 @@
     font-size: 0.85rem;
     margin-top: 14px;
   }
+  .note[hidden] { display: none; }
+
   .actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
-  button {
+  button, .btn {
     font: inherit;
     font-weight: 600;
     border: 0;
@@ -102,110 +135,73 @@
     cursor: pointer;
     flex: 1;
     min-width: 140px;
+    text-align: center;
+    text-decoration: none;
   }
   .primary { background: var(--brand); color: #fff; }
   .primary:hover { background: var(--brand-dark); }
+  .wa { background: #1fa855; color: #fff; }
   .ghost { background: #fff; color: var(--brand); border: 1.5px solid var(--brand); }
-
-  details { margin-top: 20px; }
-  summary { cursor: pointer; font-weight: 600; }
-  .rates td, .rates th { padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--line); }
-  .rates th { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; }
-  .rates tr.hit td { background: var(--soft); font-weight: 700; }
 
   footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 28px; }
 
   @media print {
     body { background: #fff; }
     .no-print { display: none !important; }
-    .card { border: 0; }
+    .plan { break-inside: avoid; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="no-print">
-    <h1>Sebut Harga <span>A-Life Sejuta Makna</span></h1>
-    <p>Masukkan umur, sebut harga terus keluar.</p>
+    <h1>Sebut Harga <span>Takaful</span></h1>
+    <p>Masukkan umur &amp; profil, sebut harga terus keluar.</p>
   </header>
 
   <form class="card no-print" id="form" autocomplete="off">
     <div class="field">
       <label for="age">Umur</label>
-      <input id="age" type="number" inputmode="numeric" min="20" max="50" placeholder="cth: 32" autofocus>
-      <div class="hint">Umur kelayakan dalam jadual: 20 – 50 tahun.</div>
+      <input id="age" type="number" inputmode="numeric" min="18" max="70" placeholder="cth: 45" autofocus>
     </div>
     <div class="field">
-      <label for="name">Nama pelanggan <span style="font-weight:400;color:var(--muted)">(pilihan)</span></label>
-      <input id="name" type="text" placeholder="cth: Puan Aisyah">
+      <span class="lbl">Jantina</span>
+      <div class="seg">
+        <input type="radio" name="gender" id="g-m" value="m" checked><label for="g-m">Lelaki</label>
+        <input type="radio" name="gender" id="g-f" value="f"><label for="g-f">Wanita</label>
+      </div>
+    </div>
+    <div class="field">
+      <span class="lbl">Merokok?</span>
+      <div class="seg">
+        <input type="radio" name="smoker" id="s-n" value="nonsmoker" checked><label for="s-n">Tidak</label>
+        <input type="radio" name="smoker" id="s-y" value="smoker"><label for="s-y">Ya</label>
+      </div>
+    </div>
+    <div class="field">
+      <label for="name">Nama pelanggan <span class="opt">(pilihan)</span></label>
+      <input id="name" type="text" placeholder="cth: Encik Ahmad">
     </div>
     <div class="error" id="error"></div>
   </form>
 
-  <section class="card" id="quote" hidden>
+  <section id="quote" hidden>
     <div class="q-head">
       <small>Sebut harga untuk</small>
       <strong id="q-who"></strong>
       <small id="q-date"></small>
     </div>
 
-    <div class="cover">
-      <small>Perlindungan</small>
-      <b>RM1,000,000</b>
-      <small>untuk tempoh 10 tahun</small>
-    </div>
-
-    <div class="prices">
-      <div class="price" id="p-m">
-        <h3>Lelaki</h3>
-        <div class="amt" id="m-month"></div>
-        <div class="per">sebulan</div>
-        <div class="sub" id="m-year"></div>
-      </div>
-      <div class="price" id="p-f">
-        <h3>Wanita</h3>
-        <div class="amt" id="f-month"></div>
-        <div class="per">sebulan</div>
-        <div class="sub" id="f-year"></div>
-      </div>
-    </div>
-
-    <table>
-      <tr><td>Kos sehari (lelaki / wanita)</td><td id="daily"></td></tr>
-      <tr><td>Jumlah caruman 10 tahun (lelaki)</td><td id="m-total"></td></tr>
-      <tr><td>Jumlah caruman 10 tahun (wanita)</td><td id="f-total"></td></tr>
-    </table>
-
-    <div class="badges">
-      <span class="badge">Perlindungan 10 tahun</span>
-      <span class="badge">Mampu milik</span>
-      <span class="badge">Ketenangan untuk keluarga</span>
-    </div>
+    <div id="plans"></div>
 
     <div class="note" id="est-note" hidden></div>
 
-    <details>
-      <summary>Apa RM1 juta boleh sediakan?</summary>
-      <table>
-        <tr><td>Perbelanjaan isi rumah 10 tahun (~RM5,000/bulan)</td><td>RM600,000</td></tr>
-        <tr><td>Tabung pendidikan 2 anak (RM100k setiap anak)</td><td>RM200,000</td></tr>
-        <tr><td>Elaun ibu bapa 10 tahun (RM1,000/bulan)</td><td>RM120,000</td></tr>
-        <tr><td>Wang kecemasan &amp; simpanan</td><td>RM80,000</td></tr>
-      </table>
-    </details>
-
     <div class="actions no-print">
-      <button class="primary" type="button" id="wa">Salin untuk WhatsApp</button>
+      <button class="primary" type="button" id="copy">Salin teks</button>
+      <a class="btn wa" id="wa" target="_blank" rel="noopener">Hantar ke WhatsApp</a>
       <button class="ghost" type="button" onclick="window.print()">Cetak / PDF</button>
     </div>
   </section>
-
-  <details class="card no-print">
-    <summary>Jadual kadar penuh</summary>
-    <table class="rates" id="rates">
-      <tr><th>Umur</th><th>Lelaki</th><th>Wanita</th></tr>
-    </table>
-  </details>
 
   <footer>
     Caruman bulanan takaful. Kadar sebenar tertakluk kepada underwriting dan terma pelan.
@@ -213,123 +209,183 @@
 </div>
 
 <script>
-  // Kadar caruman bulanan (RM) daripada jadual rasmi pelan, ikut umur.
-  const RATES = [
-    { age: 20, m: 130, f: 93 },
-    { age: 25, m: 131, f: 97 },
-    { age: 30, m: 132, f: 100 },
-    { age: 35, m: 148, f: 122 },
-    { age: 40, m: 185, f: 162 },
-    { age: 45, m: 290, f: 245 },
-    { age: 50, m: 574, f: 457 },
+  // Caruman bulanan (RM) ikut profil "<jantina>-<merokok>", kemudian umur.
+  // Entri boleh jadi nombor, atau { price, extras } bila ada manfaat yang ikut umur.
+  const PLANS = [
+    {
+      name: "BASIC PLAN",
+      tier: "--basic",
+      benefits: [
+        "RM 50,000 untuk kematian atau lumpuh kekal atau sakit kritikal",
+        "Perlindungan dan caruman sehingga umur 70 tahun",
+      ],
+      rates: {
+        "m-smoker": { 45: 171 },
+      },
+    },
+    {
+      name: "PREMIUM PLAN",
+      tier: "--premium",
+      benefits: [
+        "RM 350,000 untuk kematian (hibah takaful) atau lumpuh kekal",
+        "RM 700,000 jika kematian ketika tunaikan haji/umrah",
+        "Free estate management RM 15,000",
+        "Perlindungan sehingga umur 60 tahun",
+      ],
+      rates: {
+        "m-smoker": { 45: 263.67 },
+      },
+    },
+    {
+      name: "PLATINUM PLAN",
+      tier: "--platinum",
+      benefits: [
+        "RM 350,000 untuk kematian (hibah takaful) atau lumpuh kekal",
+        "RM 700K kematian ketika haji atau umrah",
+        "RM 1.05 Juta kematian naik kenderaan awam",
+        "Free estate management RM 15,000",
+        "Coverage sehingga umur 70 tahun",
+      ],
+      rates: {
+        "m-smoker": { 45: { price: 392.33, extras: ["Cash value masa umur 70 tahun RM 32,500+/-"] } },
+      },
+    },
+    {
+      name: "SEJUTA MAKNA PLAN",
+      tier: "--sejuta",
+      benefits: [
+        "RM 1,000,000 perlindungan takaful",
+        "Perlindungan 10 tahun",
+      ],
+      // Jadual poster hanya ada umur 20, 25 ... 50; umur di antaranya dianggar secara linear.
+      interpolate: true,
+      rates: {
+        "m-nonsmoker": { 20: 130, 25: 131, 30: 132, 35: 148, 40: 185, 45: 290, 50: 574 },
+        "f-nonsmoker": { 20: 93, 25: 97, 30: 100, 35: 122, 40: 162, 45: 245, 50: 457 },
+      },
+    },
   ];
-  const MIN_AGE = RATES[0].age;
-  const MAX_AGE = RATES[RATES.length - 1].age;
+
+  const MIN_AGE = 18;
+  const MAX_AGE = 70;
 
   const $ = (id) => document.getElementById(id);
-  const rm = (n, dp = 0) =>
-    "RM" + n.toLocaleString("en-MY", { minimumFractionDigits: dp, maximumFractionDigits: dp });
+  const rm = (n) =>
+    "RM " + n.toLocaleString("en-MY", {
+      minimumFractionDigits: Number.isInteger(n) ? 0 : 2,
+      maximumFractionDigits: 2,
+    });
 
-  // Umur di antara titik jadual dianggar secara linear, dibundarkan ke RM terdekat.
-  function rateFor(age) {
-    const exact = RATES.find((r) => r.age === age);
-    if (exact) return { m: exact.m, f: exact.f, estimated: false };
-    const hi = RATES.findIndex((r) => r.age > age);
-    const a = RATES[hi - 1], b = RATES[hi];
-    const t = (age - a.age) / (b.age - a.age);
-    return {
-      m: Math.round(a.m + (b.m - a.m) * t),
-      f: Math.round(a.f + (b.f - a.f) * t),
-      estimated: true,
-      between: [a.age, b.age],
-    };
+  function quoteFor(plan, profile, age) {
+    const table = plan.rates[profile];
+    if (!table) return null;
+    const entry = table[age];
+    if (entry !== undefined) {
+      return typeof entry === "number" ? { price: entry, extras: [] } : { extras: [], ...entry };
+    }
+    if (!plan.interpolate) return null;
+    const ages = Object.keys(table).map(Number).sort((a, b) => a - b);
+    const hi = ages.findIndex((a) => a > age);
+    if (hi <= 0) return null;
+    const a = ages[hi - 1], b = ages[hi];
+    const t = (age - a) / (b - a);
+    return { price: Math.round(table[a] + (table[b] - table[a]) * t), extras: [], estimated: true };
   }
 
   let current = null;
 
+  function el(tag, cls, text) {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
   function render() {
     const raw = $("age").value.trim();
     $("error").textContent = "";
+    current = null;
     if (raw === "") { $("quote").hidden = true; return; }
 
     const age = Number(raw);
     if (!Number.isInteger(age) || age < MIN_AGE || age > MAX_AGE) {
       $("quote").hidden = true;
-      $("error").textContent =
-        `Jadual meliputi umur ${MIN_AGE} hingga ${MAX_AGE} sahaja. Untuk umur lain, sila semak dengan pihak takaful.`;
+      $("error").textContent = `Sila masukkan umur antara ${MIN_AGE} dan ${MAX_AGE}.`;
       return;
     }
 
-    const r = rateFor(age);
+    const gender = document.querySelector("input[name=gender]:checked").value;
+    const smoker = document.querySelector("input[name=smoker]:checked").value;
     const name = $("name").value.trim();
-    current = { age, name, ...r };
+    const profile = `${gender === "m" ? "Lelaki" : "Wanita"}, ${age} tahun, ${smoker === "smoker" ? "merokok" : "tidak merokok"}`;
 
-    $("q-who").textContent = (name ? name + ", " : "") + `umur ${age} tahun`;
-    $("q-date").textContent = new Date().toLocaleDateString("ms-MY", { day: "numeric", month: "long", year: "numeric" });
+    const quotes = PLANS
+      .map((plan) => ({ plan, q: quoteFor(plan, `${gender}-${smoker}`, age) }))
+      .filter((x) => x.q);
 
-    $("m-month").textContent = rm(r.m);
-    $("f-month").textContent = rm(r.f);
-    $("m-year").textContent = rm(r.m * 12) + " setahun";
-    $("f-year").textContent = rm(r.f * 12) + " setahun";
-    $("daily").textContent = `${rm((r.m * 12) / 365, 2)} / ${rm((r.f * 12) / 365, 2)}`;
-    $("m-total").textContent = rm(r.m * 120);
-    $("f-total").textContent = rm(r.f * 120);
-
-    const note = $("est-note");
-    if (r.estimated) {
-      note.hidden = false;
-      note.textContent =
-        `Kadar untuk umur ${age} ialah anggaran antara kadar umur ${r.between[0]} dan ${r.between[1]} dalam jadual. Sila sahkan kadar tepat sebelum memuktamadkan pelan.`;
-    } else {
-      note.hidden = true;
+    if (quotes.length === 0) {
+      $("quote").hidden = true;
+      $("error").textContent = `Kadar untuk ${profile.toLowerCase()} belum dimasukkan lagi.`;
+      return;
     }
 
-    document.querySelectorAll("#rates tr[data-age]").forEach((tr) =>
-      tr.classList.toggle("hit", Number(tr.dataset.age) === age));
+    current = { name, profile, quotes };
 
+    $("q-who").textContent = name ? `${name} · ${profile}` : profile;
+    $("q-date").textContent = new Date().toLocaleDateString("ms-MY", { day: "numeric", month: "long", year: "numeric" });
+
+    const box = $("plans");
+    box.replaceChildren();
+    for (const { plan, q } of quotes) {
+      const card = el("article", "plan");
+      card.style.setProperty("--tier", `var(${plan.tier})`);
+      card.append(el("h3", null, plan.name));
+      const ul = el("ul");
+      for (const b of [...plan.benefits, ...q.extras]) ul.append(el("li", null, b));
+      card.append(ul);
+      const price = el("div", "price", rm(q.price));
+      price.append(el("small", null, " / bulan"));
+      if (q.estimated) price.append(el("span", "est", "anggaran"));
+      card.append(price);
+      box.append(card);
+    }
+
+    const note = $("est-note");
+    note.hidden = !quotes.some((x) => x.q.estimated);
+    note.textContent = "Kadar bertanda anggaran dikira daripada umur terdekat dalam jadual. Sila sahkan kadar tepat sebelum memuktamadkan pelan.";
+
+    $("wa").href = "https://wa.me/?text=" + encodeURIComponent(messageText());
     $("quote").hidden = false;
   }
 
-  function whatsappText() {
+  function messageText() {
     const c = current;
-    const lines = [
-      `*Sebut Harga A-Life Sejuta Makna*`,
-      c.name ? `Untuk: ${c.name}` : null,
-      `Umur: ${c.age} tahun`,
-      ``,
-      `Perlindungan: *RM1,000,000* (10 tahun)`,
-      `Caruman bulanan:`,
-      `• Lelaki: *${rm(c.m)}* sebulan (${rm(c.m * 12)} setahun)`,
-      `• Wanita: *${rm(c.f)}* sebulan (${rm(c.f * 12)} setahun)`,
-      c.estimated ? `\n_Kadar anggaran, tertakluk pengesahan._` : null,
-      ``,
-      `Bulan ni ada promo. PM saya untuk details!`,
-    ];
-    return lines.filter((l) => l !== null).join("\n");
+    const lines = ["*SEBUT HARGA TAKAFUL*"];
+    if (c.name) lines.push(`Untuk: ${c.name}`);
+    lines.push(c.profile);
+    for (const { plan, q } of c.quotes) {
+      lines.push("", `*${plan.name}*`);
+      for (const b of [...plan.benefits, ...q.extras]) lines.push(`- ${b}`);
+      lines.push(`- *${rm(q.price)}/MONTH*${q.estimated ? " (anggaran)" : ""}`);
+    }
+    if (c.quotes.some((x) => x.q.estimated)) lines.push("", "_Kadar anggaran, tertakluk pengesahan._");
+    return lines.join("\n");
   }
 
-  $("wa").addEventListener("click", async () => {
+  $("copy").addEventListener("click", async () => {
     if (!current) return;
-    const btn = $("wa");
+    const btn = $("copy");
     try {
-      await navigator.clipboard.writeText(whatsappText());
+      await navigator.clipboard.writeText(messageText());
       btn.textContent = "Disalin ✓";
     } catch {
-      window.prompt("Salin teks ini:", whatsappText());
+      window.prompt("Salin teks ini:", messageText());
     }
-    setTimeout(() => (btn.textContent = "Salin untuk WhatsApp"), 1800);
+    setTimeout(() => (btn.textContent = "Salin teks"), 1800);
   });
 
-  const table = $("rates");
-  RATES.forEach((r) => {
-    const tr = document.createElement("tr");
-    tr.dataset.age = r.age;
-    tr.innerHTML = `<td>${r.age}</td><td>${rm(r.m)}</td><td>${rm(r.f)}</td>`;
-    table.appendChild(tr);
-  });
-
-  $("age").addEventListener("input", render);
-  $("name").addEventListener("input", render);
+  $("form").addEventListener("input", render);
+  $("form").addEventListener("change", render);
   $("form").addEventListener("submit", (e) => e.preventDefault());
 </script>
 </body>

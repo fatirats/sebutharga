@@ -1,6 +1,7 @@
 # sebutharga
 
-Sebut harga A-Life Sejuta Makna: masukkan umur, caruman bulanan terus keluar.
+Sebut harga takaful: masukkan umur, jantina dan status merokok, pelan yang
+layak terus keluar dengan manfaat dan caruman bulanan.
 
-Kadar ada dalam `RATES` di `index.html`. Umur di antara titik jadual dianggar
-dan ditanda sebagai anggaran.
+Pelan dan kadar ada dalam `PLANS` di `index.html`, ikut profil
+`<jantina>-<merokok>` (cth. `m-smoker`) dan umur.
