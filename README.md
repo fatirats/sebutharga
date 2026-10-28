@@ -16,7 +16,9 @@ Pelan dan kadar ada dalam `PLANS` di `index.html`, ikut profil
 - `kadar.csv`: setiap harga yang pernah dimasukkan, ikut umur, pelan dan pilihan
   caruman, bersama tarikh rekod. Kadar lama tak dipadam; harga baru untuk umur
   yang sama ditambah sebagai baris baru dengan tarikh baru. Nama client tidak
-  disimpan.
+  disimpan. Backup di Google Sheet "Kadar Medical Card", tab `Kadar`
+  (https://docs.google.com/spreadsheets/d/1_2sQar3nvtLK3f80jzNPBmN5hCSwBS0fkvmoR63TJjM).
+  Setiap kali `kadar.csv` ditambah, tambah baris yang sama ke sheet tu.
 - `sebutharga.py`: isi template dan tambah rekod ke `kadar.csv`.
 
 ```
