@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<title>Sebut Harga Medical Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root {
+    --crimson: #C8102E;
+    --wine: #7A0C1E;
+    --cream: #FFF8F3;
+    --gold: #C9A227;
+    --gold-soft: #FBF3DC;
+    --ink: #1D1D1F;
+    --muted: #6E6468;
+    --line: #ECDFE2;
+    --bronze: #8A5A2B;
+    --k: 1; /* render.js mengecilkan nilai ni kalau kandungan terlebih A4 */
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 210mm; height: 297mm; }
+  body {
+    font-family: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    font-size: calc(10.4px * var(--k));
+    line-height: 1.38;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page { width: 210mm; height: 297mm; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Header */
+  header {
+    background: linear-gradient(120deg, var(--wine) 0%, var(--crimson) 100%);
+    color: #fff;
+    padding: 20px 34px 44px;
+    position: relative;
+  }
+  header::after {
+    content: ""; position: absolute; right: -60px; top: -80px;
+    width: 260px; height: 260px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,.14), rgba(255,255,255,0) 70%);
+  }
+  .top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .mark {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.35);
+    display: grid; place-items: center;
+  }
+  .eyebrow { font-size: 9px; letter-spacing: .22em; text-transform: uppercase; opacity: .8; font-weight: 600; }
+  h1 { font-size: 23px; font-weight: 800; letter-spacing: -.01em; line-height: 1.1; margin-top: 2px; }
+  .prep { text-align: right; font-size: 9px; opacity: .92; }
+  .prep strong { display: block; font-size: 12px; font-weight: 700; opacity: 1; }
+  .prep span { display: block; margin-top: 3px; opacity: .8; }
+
+  /* Client card overlapping header */
+  .client {
+    margin: -30px 34px 0; position: relative; z-index: 2;
+    background: #fff; border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(122,12,30,.12);
+    display: grid; grid-template-columns: 1.6fr 1fr 1fr;
+    padding: 12px 6px;
+  }
+  .client div { padding: 0 16px; }
+  .client div + div { border-left: 1px solid var(--line); }
+  .client small { display: block; font-size: 8px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .client b { display: block; font-size: 14px; font-weight: 800; margin-top: 2px; color: var(--wine); }
+
+  /* Table */
+  main { padding: calc(16px * var(--k)) 34px 0; flex: 1; display: flex; flex-direction: column; }
+  .table { background: #fff; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); }
+  .row { display: grid; grid-template-columns: var(--cols); align-items: stretch; }
+  .row > div { display: flex; flex-direction: column; justify-content: center; }
+  .row > div:not(:first-child) { align-items: center; }
+  .row > div { padding: calc(6px * var(--k)) 14px; }
+  .row > div:not(:first-child) { text-align: center; }
+  .row + .row { border-top: 1px solid var(--line); }
+  .row > div:first-child { font-weight: 600; }
+  .row.group > div { padding-bottom: 2px; }
+  .row.group + .row.child, .row.child + .row.child { border-top: 1px dashed var(--line); }
+  .row.child > div { padding-top: calc(4px * var(--k)); padding-bottom: calc(4px * var(--k)); }
+  .row.child > div:first-child { font-weight: 500; padding-left: 28px; position: relative; }
+  .row.child > div:first-child::before { content: ""; position: absolute; left: 16px; top: 50%; width: 5px; height: 5px; border-radius: 50%; background: var(--crimson); transform: translateY(-50%); }
+  .row.group + .row.child { border-top: none; }
+  .row .sub { display: block; font-weight: 400; color: var(--muted); font-size: 8.6px; }
+  .row > div:last-child { background: rgba(201,162,39,.06); }
+  .hl { color: var(--crimson); font-weight: 800; }
+  .dash { color: #C3B7BB; }
+  .tick {
+    display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--crimson); color: #fff; font-size: 10px; font-weight: 800;
+  }
+
+  .plans { background: var(--ink); color: #fff; align-items: stretch; }
+  .plans > div { display: flex; flex-direction: column; justify-content: center; }
+  .plans > div { padding: 11px 14px !important; }
+  .plans > div:first-child { font-size: 8.5px; letter-spacing: .16em; text-transform: uppercase; color: #CFC6C8; font-weight: 600; }
+  .plans .pname { font-size: 13px; font-weight: 800; letter-spacing: .12em; }
+  .plans .gold { background: var(--bronze) !important; }
+  .plans .premium { background: var(--crimson) !important; }
+  .plans .platinum { background: linear-gradient(135deg, #B88E1C, var(--gold)) !important; }
+  .plans .tag { display: block; font-size: 7.5px; letter-spacing: .14em; font-weight: 600; opacity: .85; margin-top: 1px; }
+
+  .section {
+    background: var(--cream); color: var(--wine);
+    font-size: 9px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase;
+    padding: calc(8px * var(--k)) 14px; border-top: 1px solid var(--line);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section::before { content: ""; width: 14px; height: 2px; background: var(--crimson); border-radius: 2px; }
+
+  /* Pricing */
+  .pricing { margin-top: calc(16px * var(--k)); }
+  .pricing h2 {
+    font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--wine); font-weight: 800;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 7px;
+  }
+  .pricing h2::before { content: ""; width: 14px; height: 2px; background: var(--crimson); border-radius: 2px; }
+  .price-row {
+    display: grid; grid-template-columns: var(--cols); align-items: center;
+    background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: calc(11px * var(--k)) 0;
+  }
+  .price-row + .price-row { margin-top: calc(9px * var(--k)); }
+  .price-row > div { padding: 0 12px; }
+  .price-row > div:not(:first-child) { text-align: center; }
+  .price-row .lbl b { display: block; font-size: 11.5px; font-weight: 800; }
+  .price-row .lbl span { color: var(--muted); font-size: 8.6px; }
+  .amt { font-size: calc(24px * var(--k)); font-weight: 800; color: var(--ink); letter-spacing: -.01em; }
+  .amt small { font-size: 10px; font-weight: 700; margin-right: 2px; vertical-align: 4px; }
+  .amt em { display: block; font-style: normal; font-size: 8px; color: var(--muted); font-weight: 500; letter-spacing: .04em; }
+  .price-row .lbl .badge { color: #fff; }
+  .price-row.smart { background: var(--gold-soft); border: 1.5px solid var(--gold); position: relative; }
+  .price-row.smart .amt { color: var(--wine); }
+  .badge {
+    display: inline-block; background: var(--wine); color: #fff; font-size: 7.5px; font-weight: 800;
+    letter-spacing: .12em; padding: 2px 7px; border-radius: 99px; margin-left: 6px; vertical-align: 1px;
+  }
+
+  footer {
+    margin-top: auto; padding: 10px 34px 14px;
+    display: flex; justify-content: space-between; align-items: center; gap: 20px;
+  }
+  footer p { font-size: 9.5px; color: var(--wine); font-weight: 600; font-style: italic; }
+  footer .sig { font-size: 8.5px; color: var(--muted); text-align: right; white-space: nowrap; }
+  footer .sig b { color: var(--ink); display: block; font-size: 10px; }
+  .bar { height: 6px; background: linear-gradient(90deg, var(--wine), var(--crimson) 60%, var(--gold)); }
+</style>
+</head>
+<body>
+<div class="page" style="--cols: {{COLS}}">
+  <header>
+    <div class="top">
+      <div class="brand">
+        <div class="mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"/><path d="M12 9v6M9 12h6"/></svg>
+        </div>
+        <div>
+          <div class="eyebrow">Sebut Harga Takaful</div>
+          <h1>Recommendation Medical Plan</h1>
+        </div>
+      </div>
+      <div class="prep">
+        Disediakan oleh
+        <strong>Fatira Tamhaji</strong>
+        <span>{{TARIKH}}</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="client">
+    <div><small>Nama</small><b>{{NAMA}}</b></div>
+    <div><small>Umur</small><b>{{UMUR}}</b></div>
+    <div><small>Merokok / Vape</small><b>{{MEROKOK}}</b></div>
+  </section>
+
+  <main>
+    <div class="table">
+{{JADUAL}}
+    </div>
+
+    <div class="pricing">
+      <h2>Pilihan Caruman Bulanan</h2>
+{{CARUMAN}}
+    </div>
+  </main>
+
+  <footer>
+    <p>This quotation is flexible and can be adjusted to match your budget and preferences.</p>
+  </footer>
+  <div class="bar"></div>
+</div>
+</body>
+</html>

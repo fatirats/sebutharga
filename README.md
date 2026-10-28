@@ -19,12 +19,20 @@ Pelan dan kadar ada dalam `PLANS` di `index.html`, ikut profil
   disimpan. Backup di Google Sheet "Kadar Medical Card", tab `Kadar`
   (https://docs.google.com/spreadsheets/d/1_2sQar3nvtLK3f80jzNPBmN5hCSwBS0fkvmoR63TJjM).
   Setiap kali `kadar.csv` ditambah, tambah baris yang sama ke sheet tu.
-- `sebutharga.py`: isi template dan tambah rekod ke `kadar.csv`.
+- `sebutharga.py`: isi template, jana PDF/PNG untuk client, dan tambah rekod ke
+  `kadar.csv`.
+- `design.py`, `design/quote.html`, `design/render.js`: design sebut harga untuk
+  client (A4, satu muka surat). Semua manfaat dibaca daripada table Numbers yang
+  dah diisi, jadi design yang sama digunakan untuk 2 pelan, 3 pelan dan bayi.
+  Kalau kandungan terlebih A4, saiz tulisan dikecilkan sedikit secara automatik.
 
 ```
 pip install numbers-parser
+npm install -g playwright   # untuk PDF/PNG; perlu Chromium
 python medical/sebutharga.py input.json
+python medical/sebutharga.py input.json --tanpa-rekod   # jana semula sahaja
 ```
 
 Format `input.json` ada di bahagian atas `sebutharga.py`. Fail keluar di
-`medical/output/` (tidak di-commit sebab ada nama client).
+`medical/output/`: `<nama>_<umur>.numbers` dan `Sebut_Harga_<nama>_<umur>.pdf/.png`
+(tidak di-commit sebab ada nama client).

@@ -2,6 +2,7 @@
 
 Guna:
     python medical/sebutharga.py input.json
+    python medical/sebutharga.py input.json --tanpa-rekod   (jana semula, tak tambah ke kadar.csv)
 
 Contoh input.json:
     {
@@ -22,8 +23,9 @@ Template dipilih sendiri: ada GOLD -> "3 Pelan"; pilihan SMART BASIC/STARTER/
 PREMIER/NEWBORN -> "Bayi"; selain tu -> "2 Pelan". "tarikh" ikut hari ini kalau
 tak diisi. "hibah" dan "kematian_kemalangan" ikut nilai template kalau tak diisi.
 
-Output: medical/output/<nama>_<umur>.numbers, dan setiap harga ditambah ke
-medical/kadar.csv bersama tarikh. Nama client tidak disimpan dalam kadar.csv.
+Output dalam medical/output/: <nama>_<umur>.numbers, dan Sebut_Harga_<nama>_<umur>
+.pdf/.png ikut design/quote.html (perlu node + playwright). Setiap harga ditambah
+ke medical/kadar.csv bersama tarikh. Nama client tidak disimpan dalam kadar.csv.
 """
 
 import csv
@@ -34,6 +36,8 @@ from pathlib import Path
 
 from numbers_parser import Document
 from numbers_parser.constants import DOCUMENT_ID
+
+import design
 
 HERE = Path(__file__).parent
 TEMPLATE = HERE / "template.numbers"
@@ -149,6 +153,7 @@ def rekod(q, pelan, hibah):
 
 def main():
     q = json.loads(Path(sys.argv[1]).read_text())
+    simpan_rekod = "--tanpa-rekod" not in sys.argv[2:]
     q.setdefault("tarikh", datetime.date.today().isoformat())
     q.setdefault("merokok", "tidak")
 
@@ -160,10 +165,14 @@ def main():
     sheet.name = "Medical Plan"
 
     OUTPUT.mkdir(exist_ok=True)
-    out = OUTPUT / f"{q['nama'].replace(' ', '_')}_{q['umur']}.numbers"
+    nama = f"{q['nama'].replace(' ', '_')}_{q['umur']}"
+    out = OUTPUT / f"{nama}.numbers"
     doc.save(out)
-    rekod(q, pelan, hibah)
     print(f"{out}  ({nama_sheet})")
+    for f in design.jana(sheet.tables[0], q, OUTPUT / f"Sebut_Harga_{nama}"):
+        print(f)
+    if simpan_rekod:
+        rekod(q, pelan, hibah)
 
 
 if __name__ == "__main__":
