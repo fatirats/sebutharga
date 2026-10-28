@@ -7,7 +7,7 @@ Guna:
 Contoh input.json:
     {
       "nama": "Ali",
-      "umur": 30,
+      "umur": 30,               (atau "tahun_lahir": 1996, umur = tahun tarikh - tahun lahir)
       "jantina": "lelaki",
       "merokok": "tidak",
       "tarikh": "2026-10-28",
@@ -22,6 +22,8 @@ Contoh input.json:
 Template dipilih sendiri: ada GOLD -> "3 Pelan"; pilihan SMART BASIC/STARTER/
 PREMIER/NEWBORN -> "Bayi"; selain tu -> "2 Pelan". "tarikh" ikut hari ini kalau
 tak diisi. "hibah" dan "kematian_kemalangan" ikut nilai template kalau tak diisi.
+Pelan atau pilihan caruman tanpa harga dibuang daripada PDF/PNG; dalam fail
+Numbers harganya ditukar ke "-".
 
 Output dalam medical/output/: <nama>_<umur>.numbers, dan Sebut_Harga_<nama>_<umur>
 .pdf/.png ikut design/quote.html (perlu node + playwright). Setiap harga ditambah
@@ -113,10 +115,16 @@ def isi(table, q):
             break
         rows[pilihan_key(label)] = r
     for plan, harga in pelan.items():
-        for p, nilai in harga.items():
+        for p in harga:
             if p not in rows:
                 sys.exit(f"Pilihan '{p}' tiada dalam template (ada: {sorted(rows)})")
-            rm(table, rows[p], plan_cols[plan], nilai)
+    for plan, c in plan_cols.items():
+        for p, r in rows.items():
+            nilai = pelan.get(plan, {}).get(p)
+            if nilai is None:
+                table.write(r, c, "-")  # buang harga contoh daripada template
+            else:
+                rm(table, r, c, nilai)
 
     # Nilai hibah sebenar setiap pelan (ikut template kalau tak diisi) untuk rekod kadar.
     def nilai_baris(prefix, c):
@@ -155,6 +163,8 @@ def main():
     q = json.loads(Path(sys.argv[1]).read_text())
     simpan_rekod = "--tanpa-rekod" not in sys.argv[2:]
     q.setdefault("tarikh", datetime.date.today().isoformat())
+    if "tahun_lahir" in q:
+        q["umur"] = datetime.date.fromisoformat(q["tarikh"]).year - int(q["tahun_lahir"])
     q.setdefault("merokok", "tidak")
 
     nama_sheet = pilih_sheet(q)
@@ -169,7 +179,7 @@ def main():
     out = OUTPUT / f"{nama}.numbers"
     doc.save(out)
     print(f"{out}  ({nama_sheet})")
-    for f in design.jana(sheet.tables[0], q, OUTPUT / f"Sebut_Harga_{nama}"):
+    for f in design.jana(sheet.tables[0], q, pelan, OUTPUT / f"Sebut_Harga_{nama}"):
         print(f)
     if simpan_rekod:
         rekod(q, pelan, hibah)

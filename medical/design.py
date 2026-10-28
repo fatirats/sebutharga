@@ -55,8 +55,8 @@ def baris(label, cells, cls=""):
 
 def jadual(table, label_col, plan_cols, header, caruman):
     out = ['      <div class="row plans"><div>Manfaat</div>']
-    for i, (plan, _) in enumerate(plan_cols):
-        tag = '<span class="tag">PERLINDUNGAN TERTINGGI</span>' if i == len(plan_cols) - 1 and len(plan_cols) > 1 else ""
+    for plan, _ in plan_cols:
+        tag = '<span class="tag">PERLINDUNGAN TERTINGGI</span>' if plan == "PLATINUM" and len(plan_cols) > 1 else ""
         out[0] += f'<div class="{plan.lower()}"><span class="pname">{e(plan)}</span>{tag}</div>'
     out[0] += "</div>"
 
@@ -84,7 +84,7 @@ def jadual(table, label_col, plan_cols, header, caruman):
     return "\n".join(out)
 
 
-def caruman_html(table, label_col, plan_cols, caruman):
+def caruman_html(table, label_col, plan_cols, caruman, pelan):
     out = []
     for r in range(caruman + 1, table.num_rows):
         label = table.cell(r, label_col).value
@@ -92,6 +92,8 @@ def caruman_html(table, label_col, plan_cols, caruman):
             break
         first, *rest = str(label).split("\n")
         key = first.split("(")[0].strip().upper()
+        if not any(key in pelan[p] for p, _ in plan_cols):
+            continue  # pilihan tanpa harga tak ditunjuk
         tajuk, badge, sub = CARUMAN.get(key, (
             "SMART " + key.removeprefix("SMART ").title() if key.startswith("SMART ") else key.title(),
             "",
@@ -109,14 +111,18 @@ def caruman_html(table, label_col, plan_cols, caruman):
     return "\n".join(out)
 
 
-def jana(table, q, out_base):
-    """Tulis <out_base>.html, kemudian render ke .pdf dan .png. Pulangkan senarai fail."""
+def jana(table, q, pelan, out_base):
+    """Tulis <out_base>.html, kemudian render ke .pdf dan .png. Pulangkan senarai fail.
+
+    pelan: {PELAN: {PILIHAN: harga}}. Pelan dan pilihan tanpa harga tak ditunjuk.
+    """
     label_col = next(c for c in range(table.num_cols)
                      if table.cell(0, c).value == "RECOMMENDATION MEDICAL PLAN")
     header = next(r for r in range(table.num_rows) if table.cell(r, label_col).value == "MANFAAT UTAMA")
     caruman = next(r for r in range(table.num_rows) if table.cell(r, label_col).value == "PILIHAN CARUMAN")
     plan_cols = [(str(table.cell(header, c).value).upper(), c)
-                 for c in range(label_col + 1, table.num_cols) if table.cell(header, c).value]
+                 for c in range(label_col + 1, table.num_cols)
+                 if str(table.cell(header, c).value or "").upper() in pelan]
 
     t = datetime.date.fromisoformat(q["tarikh"])
     isi = {
@@ -126,7 +132,7 @@ def jana(table, q, out_base):
         "UMUR": f"{q['umur']} tahun",
         "MEROKOK": e(str(q["merokok"]).capitalize()),
         "JADUAL": jadual(table, label_col, plan_cols, header, caruman),
-        "CARUMAN": caruman_html(table, label_col, plan_cols, caruman),
+        "CARUMAN": caruman_html(table, label_col, plan_cols, caruman, pelan),
     }
     page = (DESIGN / "quote.html").read_text()
     for k, v in isi.items():

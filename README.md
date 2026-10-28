@@ -25,6 +25,8 @@ Pelan dan kadar ada dalam `PLANS` di `index.html`, ikut profil
   client (A4, satu muka surat). Semua manfaat dibaca daripada table Numbers yang
   dah diisi, jadi design yang sama digunakan untuk 2 pelan, 3 pelan dan bayi.
   Kalau kandungan terlebih A4, saiz tulisan dikecilkan sedikit secara automatik.
+  Pelan atau pilihan caruman yang tiada harga dibuang daripada PDF/PNG; dalam
+  fail Numbers harganya ditukar ke "-".
 
 ```
 pip install numbers-parser
